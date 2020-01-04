@@ -132,7 +132,7 @@ def callgraph_reversed(bv, current_function):
 
 class CallgraphThread(BackgroundTaskThread):
 	def __init__(self, view, function, mode):
-		super().__init__('Computing callgraph from {}...'.format(function.name))
+		super().__init__('Computing callgraph from {} [{}]...'.format(function.name, mode))
 		self.view = view
 		self.function = function
 		self.mode = mode
