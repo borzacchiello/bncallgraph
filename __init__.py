@@ -101,6 +101,7 @@ class GraphWrapper(object):
 		self.graph.show("Callgraph starting from {}".format(self.root_function.name))
 
 def callgraph(bv, current_function):
+	bv.update_analysis_and_wait()
 	graph = GraphWrapper(current_function)
 
 	visited = set()
@@ -116,6 +117,7 @@ def callgraph(bv, current_function):
 	graph.show()
 
 def callgraph_reversed(bv, current_function):
+	bv.update_analysis_and_wait()
 	graph = GraphWrapper(current_function)
 
 	visited = set()
