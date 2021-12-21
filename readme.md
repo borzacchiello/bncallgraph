@@ -11,6 +11,7 @@ The plugin constructs and visualize a callgraph starting from the current functi
 # Settings
 - **Colorize Leaves**: Mark nodes without outgoing edges in red.
 - **Colorize Root**: Mark current function in green.
+- **Show Indirect Calls**: Show indirect calls as undefined blocks in the callgraph.
 
 # Minumum Version
 Tested on `dev-1.2.1987` with `python 3.6.9`.
