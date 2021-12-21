@@ -181,8 +181,8 @@ def callgraph(bv, current_function):
 						elif llil.dest.possible_values.type.name == "UndeterminedValue" and show_indirect:
 							# Indirect call
 							indirect_calls.add(UndeterminedFunction(llil.address))
-					elif llil.dest.operation.name == "LLIL_CONST_PTR":
-						dst_funs = bv.get_functions_at(llil.dest.constant)
+					elif llil.dest.possible_values.type.name == "ConstantPointerValue":
+						dst_funs = bv.get_functions_at(llil.dest.possible_values.value)
 						for dst_fun in dst_funs:
 							calls.add(dst_fun)
 
