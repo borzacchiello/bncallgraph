@@ -185,6 +185,9 @@ def callgraph(bv, current_function):
 						dst_funs = bv.get_functions_at(llil.dest.possible_values.value)
 						for dst_fun in dst_funs:
 							calls.add(dst_fun)
+					elif show_indirect:
+						# Indirect call
+						indirect_calls.add(UndeterminedFunction(llil.address))
 
 		for child_func in calls | indirect_calls | external_calls:
 			graph.add(child_func, func)
