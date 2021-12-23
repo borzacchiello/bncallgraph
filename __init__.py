@@ -8,7 +8,8 @@ from binaryninja import (
 	enums,
 	PluginCommand,
 	Settings,
-	BackgroundTaskThread
+	BackgroundTaskThread,
+	demangle
 )
 
 Settings().register_group("bn-callgraph", "BN CallGraph")
@@ -64,8 +65,28 @@ class ExternalFunction(object):
 	def __eq__(self, other):
 		return isinstance(other, ExternalFunction) and self.name == other.name
 
+def demangle_name(bv, name, max_size=64):
+	res = name
+	if bv.platform.name.startswith("linux-") or bv.platform.name.startswith("mac-"):
+		_, demangled = demangle.demangle_gnu3(bv.arch, name)
+		if not isinstance(demangled, list):
+			res = demangled
+		else:
+			res = demangle.simplify_name_to_string(demangle.get_qualified_name(demangled))
+	elif bv.platform.name.startswith("windows-"):
+		_, demangled = demangle.demangle_ms(bv.arch, name)
+		if not isinstance(demangled, list):
+			res = demangled
+		else:
+			res = demangle.simplify_name_to_string(demangle.get_qualified_name(demangled))
+
+	if len(res) > max_size:
+		res = res[:max_size//2-3] + "..." + res[-max_size//2:]
+	return res
+
 class GraphWrapper(object):
-	def __init__(self, root_function):
+	def __init__(self, bv, root_function):
+		self.bv = bv
 		self.nodes = {}
 		self.edges = set()
 		self.graph = FlowGraph()
@@ -74,13 +95,12 @@ class GraphWrapper(object):
 		if Settings().get_bool("bn-callgraph.showColorRoot"):
 			root_node.highlight = enums.HighlightStandardColor.GreenHighlightColor
 		root_node.lines = [
-			GraphWrapper._build_function_text(root_function)
+			self._build_function_text(root_function)
 		]
 		self.graph.append(root_node)
 		self.nodes[root_function] = root_node
 
-	@staticmethod
-	def _build_function_text(function):
+	def _build_function_text(self, function):
 		res = \
 			DisassemblyTextLine ([
 					InstructionTextToken(
@@ -94,7 +114,7 @@ class GraphWrapper(object):
 					),
 					InstructionTextToken(
 						InstructionTextTokenType.CodeSymbolToken,
-						function.name,
+						demangle_name(self.bv, function.name),
 						function.start
 					)
 				])
@@ -110,7 +130,7 @@ class GraphWrapper(object):
 		else:
 			node = FlowGraphNode(self.graph)
 			node.lines = [
-				GraphWrapper._build_function_text(function)
+				self._build_function_text(function)
 			]
 			self.graph.append(node)
 			self.nodes[function] = node
@@ -141,7 +161,7 @@ class GraphWrapper(object):
 
 def callgraph(bv, current_function):
 	bv.update_analysis_and_wait()
-	graph = GraphWrapper(current_function)
+	graph = GraphWrapper(bv, current_function)
 
 	show_indirect = False
 	if Settings().get_bool("bn-callgraph.showIndirectCalls"):
