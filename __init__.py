@@ -157,7 +157,8 @@ class GraphWrapper(object):
 				if isinstance(fun, UndeterminedFunction):
 					self.nodes[fun].highlight = enums.HighlightStandardColor.BlueHighlightColor
 
-		self.graph.show("Callgraph starting from {}".format(self.root_function.name))
+		self.graph.show("Callgraph starting from {} @ {:#x}".format(
+			demangle_name(self.bv, self.root_function.name), self.root_function.start))
 
 def callgraph(bv, current_function):
 	bv.update_analysis_and_wait()
