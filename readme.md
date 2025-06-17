@@ -6,7 +6,7 @@ The plugin constructs and visualize a callgraph starting from the current functi
 
 # Commands
 - **Compute callgraph**: Compute and visualize a callgraph starting from the current function, following calls. The callgraph contains all the functions reachable starting from the current function.
-- **Compute reversed callgraph**: Compute and visualize a callgraph starting from the current function, following xrefs. The callgraph contains all the functions that reaches the current function.
+- **Compute calleegraph**: Compute and visualize a callgraph starting from the current function, following xrefs. The callgraph contains all the functions that reaches the current function.
 
 # Settings
 - **Colorize Leaves**: Mark nodes without outgoing edges in red.

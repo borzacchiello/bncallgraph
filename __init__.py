@@ -219,9 +219,9 @@ def callgraph(bv, current_function):
 		visited.add(func)
 	graph.show()
 
-def callgraph_reversed(bv, current_function):
+def calleegraph(bv, current_function):
 	bv.update_analysis_and_wait()
-	graph = GraphWrapper(current_function)
+	graph = GraphWrapper(bv, current_function)
 
 	visited = set()
 	stack   = [current_function]
@@ -243,8 +243,8 @@ class CallgraphThread(BackgroundTaskThread):
 		self.mode = mode
 
 	def run(self):
-		if self.mode == "reversed":
-			callgraph_reversed(self.view, self.function)
+		if self.mode == "callee":
+			calleegraph(self.view, self.function)
 		else:
 			callgraph(self.view, self.function)
 
@@ -261,7 +261,7 @@ PluginCommand.register_for_function(
 )
 
 PluginCommand.register_for_function(
-	"BNCallGraph\\Compute reversed callgraph",
+	"BNCallGraph\\Compute calleegraph",
 	"",
-	_wrapper("reversed")
+	_wrapper("callee")
 )
